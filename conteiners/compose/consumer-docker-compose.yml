@@ -1,0 +1,19 @@
+# consumer-docker-compose.yml
+
+version: '3.8'
+
+services:
+  websocket-consumer:
+    build: 
+      context: ../../
+      dockerfile: messaging/consumer/Dockerfile
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC: user_events
+
+    networks:
+      - messaging-system
+
+networks:
+  messaging-system:
+    external: true

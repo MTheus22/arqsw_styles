@@ -1,0 +1,21 @@
+# producer-docker-compose.yml
+
+version: '3.8'
+
+services:
+  websocket-producer:
+    build: 
+      context: ../../
+      dockerfile: messaging/producer/Dockerfile
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC: user_events
+    ports:
+      - "6789:6789"
+
+    networks:
+      - messaging-system
+
+networks:
+  messaging-system:
+    external: true

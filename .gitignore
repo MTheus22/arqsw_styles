@@ -1,0 +1,19 @@
+# Logs
+*.log
+logs/
+*.pid
+
+# Ambiente Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Docker
+*.env
+docker-compose.override.yml
+
+# Outros
+.idea/
+.vscode/
+.DS_Store

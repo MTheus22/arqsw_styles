@@ -1,0 +1,56 @@
+version: '3.3'
+
+services:
+  kong-database:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+    volumes:
+      - kong_data:/var/lib/postgresql/data
+    networks:
+      - messaging-system
+
+  kong-migrations:
+    build: ../../api_gateway
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_CASSANDRA_CONTACT_POINTS: kong-database
+    volumes:
+      - ../wait-for-it.sh:/wait-for-it.sh
+    command: ["/wait-for-it.sh", "kong-database:5432", "--", "kong", "migrations", "bootstrap"]
+    networks:
+      - messaging-system
+    depends_on:
+      - kong-database
+
+  kong:
+    build: ../../api_gateway
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_ADMIN_LISTEN: '0.0.0.0:8001, 0.0.0.0:8444 ssl'
+
+    ports:
+      - "8000:8000"   # Porta de proxy HTTP
+      - "8443:8443"   # Porta de proxy HTTPS
+      - "8001:8001"   # Porta de administração HTTP
+      - "8444:8444"   # Porta de administração HTTPS
+
+    networks:
+      - messaging-system
+    depends_on:
+      - kong-migrations
+
+volumes:
+  kong_data:
+
+networks:
+  messaging-system:
+    external: true
