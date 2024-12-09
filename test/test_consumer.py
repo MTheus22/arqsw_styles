@@ -1,3 +1,5 @@
+# test/test_consumer.py
+
 import asyncio
 import websockets
 

@@ -4,13 +4,13 @@
 DOCKER_KAFKA_COMPOSE = conteiners/compose/kafka-docker-compose.yml
 DOCKER_KONG_COMPOSE = conteiners/compose/kong-docker-compose.yml
 DOCKER_CONSUMER_COMPOSE = conteiners/compose/consumer-docker-compose.yml
-DOKCER_PRODUCER_COMPOSE = conteiners/compose/producer-docker-compose.yml
+DOCKER_PRODUCER_COMPOSE = conteiners/compose/producer-docker-compose.yml
 
 # inicializar os serviços
 up:
 	docker-compose -f $(DOCKER_KAFKA_COMPOSE) up -d
 	docker-compose -f $(DOCKER_KONG_COMPOSE) up -d
-	docker-compose -f $(DOCKER_PRODUCER_COMPOSE) up
+	docker-compose -f $(DOCKER_PRODUCER_COMPOSE) up -d
 	docker-compose -f $(DOCKER_CONSUMER_COMPOSE) up
 
 

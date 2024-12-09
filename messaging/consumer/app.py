@@ -24,16 +24,24 @@ class KafkaEventConsumer:
             yield message.value
 
 
-async def websocket_handler(websocket):
+async def websocket_handler(websocket, path):
     kafka_consumer = KafkaEventConsumer("user_events")
     try:
         for event in kafka_consumer.consume_events():
-            await websocket.send(json.dumps(event))
-            await asyncio.sleep(1)
+            try:
+                # Tenta enviar os eventos para o cliente conectado
+                await websocket.send(json.dumps(event))
+            except websockets.exceptions.ConnectionClosed:
+                # Aguarda por um novo cliente
+                logger.warning("WebSocket connection closed. Waiting for a new connection.")
+                break
+            await asyncio.sleep(1)  # Evita consumo excessivo de CPU
     except Exception as e:
         logger.error(f"Error in WebSocket handler: {e}")
     finally:
-        await websocket.close()
+        # Não feche o WebSocket servidor, apenas finalize a comunicação com o cliente
+        logger.info("Awaiting new WebSocket client...")
+
 
 
 if __name__ == "__main__":
